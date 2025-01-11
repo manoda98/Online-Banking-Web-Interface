@@ -19,6 +19,26 @@
   color: white;
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+}
+
+.sidebar .ant-menu {
+  flex: 1;
+  border-right: none; /* Removes border between the menu and the sidebar */
+  background-color: transparent; /* Ensures no background color overrides */
+}
+
+.sidebar .ant-menu-item {
+  color: white; /* White text for menu items */
+}
+
+.sidebar .ant-menu-item-selected {
+  background-color: rgb(50, 143, 230); /* White text for menu items */
+}
+
+.sidebar .ant-menu-item:hover {
+  color: white;
+  background-color: #0044cc; /* Hover effect */
 }
 
 .sidebar ul {
@@ -78,9 +98,18 @@
 }
 
 .content {
-  padding-top: 50px;
+  padding-top: 10px;
   display: flex;
   flex-direction: row;
+}
+
+.main-content-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column; /* Arrange items in a vertical column */
+  gap: 20px; /* Add a gap between the sections */
+  overflow-y: auto; /* Enable vertical scrolling */
+  height: calc(100vh - 100px); /* Adjust height based on the viewport minus any fixed header/footer height */
 }
 
 /* Main Content */
@@ -255,6 +284,7 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 250px;
 }
 
 .favorites h2 {
