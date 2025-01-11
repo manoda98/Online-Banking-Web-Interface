@@ -96,20 +96,6 @@ const Dashboard = ({onLogout}) => {
                   <p>{accounts[currentAccount].balance}</p>
                 </div>
                 </div>
-                {/* Account switch buttons */}
-                
-
-                {/* <h2>Account Information</h2>
-                <div className="account-details">
-                  <div className="account-detail">
-                    <strong>Account Number:</strong>
-                    <p>2001238901</p>
-                  </div>
-                  <div className="account-detail">
-                    <strong>Account Balance (LKR):</strong>
-                    <p>1,000,000</p>
-                  </div>
-                </div> */}
               </div>
 
               <div className="section quick-access">
