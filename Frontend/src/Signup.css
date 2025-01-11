@@ -1,13 +1,25 @@
 .signup-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: #4a5cd6;
+  background-image: url('/public/Background.png'); /* Access the image from the public folder */
+  background-size: cover; /* Scale the image to cover the entire container */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Prevent tiling of the image */
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Ensure no scrollbars appear */
   }
   
   .signup-logo {
-    margin-right: 50px;
+    margin-right: 150px;
+    background: #f9fafa;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .logo-circle {

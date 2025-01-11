@@ -1,74 +1,58 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { UserAddOutlined, LockOutlined } from '@ant-design/icons';
+import { Input, Button } from 'antd';
+import { Link, useNavigate } from "react-router-dom"; // Import Link
 import "./Login.css";
 
 const Login = ({ onLoginSuccess }) => {
-  const [credentials, setCredentials] = useState({ username: "", password: "" });
-  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials({ ...credentials, [name]: value });
-  };
-
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        setMessage("Login successful!");
-        onLoginSuccess(data.user); // Pass user details to the parent
-      } else {
-        setMessage(data.message || "Login failed!");
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      setMessage("An error occurred during login.");
+    // Simulating successful login
+    if (username === "admin" && password === "password") {
+      onLoginSuccess(); // Call the function to switch to Dashboard
+      navigate('/dashboard');
+    } else {
+      alert("Invalid credentials. Try 'admin' and 'password'.");
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-logo">
-        <div className="logo-circle">
-          <h1>NATIONAL BANK</h1>
-        </div>
+        <img 
+          src="/logo.png" 
+          alt="National Bank Logo" 
+          style={{
+            width: '150px', 
+            height: '150px', 
+            objectFit: 'contain', 
+            borderRadius: '1%',
+          }} 
+        />
       </div>
       <div className="login-form">
         <h2>Login</h2>
         <p>Welcome Back!</p>
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label>Username</label>
-            <input
-              type="text"
-              name="username"
-              placeholder="Enter your username"
-              value={credentials.username}
-              onChange={handleChange}
-            />
+            <Input size="large" placeholder="Enter your username" value={username} onChange={(e) => setUsername(e.target.value)} prefix={<UserAddOutlined />} />
           </div>
           <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              value={credentials.password}
-              onChange={handleChange}
-            />
+            <Input size="large" type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} prefix={<LockOutlined />} />
           </div>
-          <button type="submit" className="login-btn">
-            Login
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+            <Button type="primary" htmlType="submit">
+              Login
+            </Button>
+          </div>
         </form>
-        {message && <p className="message">{message}</p>}
+        <p className="signup-link">
+          <Link to="/signup">Forgot password ?</Link>
+        </p>
         <p className="signup-link">
           Don’t have an account? <Link to="/signup">Signup</Link>
         </p>
