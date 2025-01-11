@@ -44,7 +44,7 @@ const Dashboard = ({onLogout}) => {
       {/* Top Icons */}
       <div className="top-icons">
         <div className="logo-container">
-          <img src="/logo.png" alt="Bank Logo" className="bank-logo" />
+          <img src="/logo_icon.png" alt="Bank Logo" className="bank-logo" />
         </div>
         <button className="notification-btn">🔔</button>
         <select className="language-select">
