@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import { Flex, Menu } from "antd";
+import { Input, Button, Select, Checkbox  } from 'antd';
 import {
   DashboardOutlined,
   WalletOutlined,
@@ -10,6 +11,11 @@ import {
   QuestionCircleOutlined,
   SettingOutlined,
   BulbOutlined,
+  BankOutlined,
+  DollarOutlined,
+  NumberOutlined,
+  UserOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 
 const Dashboard = ({ onLogout }) => {
@@ -17,6 +23,18 @@ const Dashboard = ({ onLogout }) => {
   const [currentAccount, setCurrentAccount] = useState(0);
   const [isAccountSwitching, setIsAccountSwitching] = useState(false);
   const [currentPage, setCurrentPage] = useState("dashboard");
+  const [showSendMoneyForm, setShowSendMoneyForm] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  const [sendAmount, setSendAmount] = useState("");
+  const [sendBank, setSendBank] = useState("");
+  const [sendAccNumber, setSendAccNumber] = useState("");
+  const [sendName, setSendName] = useState("");
+  const [sendRemarks, setSendRemarks] = useState("");
+  const [addToFavorites, setAddToFavorites] = useState(false);
+  const [sendSms, setSendSms] = useState(false);
+
   const navigate = useNavigate();
 
   const menuItems = [
@@ -41,91 +59,267 @@ const Dashboard = ({ onLogout }) => {
     }
   };
 
+  const handleCancelSendMoney = () => {
+    // Reset form values
+    setSendAmount("");
+    setSendBank("");
+    setSendAccNumber("");
+    setSendName("");
+    setSendRemarks("");
+  
+    // Hide the form
+    setShowSendMoneyForm(false);
+  };
+
+  const handleCancelConfirmation = () => {
+    // Reset form values
+    setSendAmount("");
+    setSendBank("");
+    setSendAccNumber("");
+    setSendName("");
+    setSendRemarks("");
+
+    setShowConfirmation(false);
+    // setCurrentPage("dashboard"); // Go back to the dashboard
+  };
+
+  const handleSend = (e) => {
+    setShowSendMoneyForm(false);
+    setShowConfirmation(true); // Show confirmation window
+  };
+
+  const handleConfirm = () => {
+    setShowConfirmation(false);
+    setShowSuccessMessage(true); // Show success message
+  };
+
+  const handleSuccessConfirmation = () => {
+    setSendAmount("");
+    setSendBank("");
+    setSendAccNumber("");
+    setSendName("");
+    setSendRemarks("");
+    
+    setShowSuccessMessage(false); // Show success message
+  };
+
+  const renderSendMoneyForm = () => (
+    <div className="send-money-form">
+      <h2>Send Money</h2>
+      <form  onSubmit={handleSend}>
+          <div className="form-group">
+            <Select size="large" value={currentAccount ? currentAccount : "none"} onChange={(value) => setCurrentAccount(value)} prefix={<BankOutlined />} >
+            <Select.Option value="none">
+                 Select Source Account
+            </Select.Option>
+              {accounts.map((account, index) => (
+                <Select.Option key={index} value={account.number}>
+                  {account.number} - LKR {account.balance}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+          <div className="form-group">
+            <Input size="large" placeholder="Amount" value={sendAmount} onChange={(e) => setSendAmount(e.target.value)} prefix={<DollarOutlined />} />
+          </div>
+          <div className="form-group">
+            <Select size="large" value={sendBank ? sendBank : "none"} onChange={(value) => setSendBank(value)} prefix={<BankOutlined />} >
+            <Select.Option value="none">
+                 Select Receiver Bank
+            </Select.Option>
+              {banks.map((bank, index) => (
+                <Select.Option key={index} value={bank.name}>
+                  {bank.name} {/* Display the actual bank name */}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+          <div className="form-group">
+            <Input size="large" placeholder="Receiver Account Number" value={sendAccNumber} onChange={(e) => setSendAccNumber(e.target.value)} prefix={<NumberOutlined />} />
+          </div>
+          <div className="form-group">
+            <Input size="large" placeholder="Receiver Name" value={sendName} onChange={(e) => setSendName(e.target.value)} prefix={<UserOutlined />} />
+          </div>
+          <div className="form-group">
+            <Input size="large" placeholder="Remarks" value={sendRemarks} onChange={(e) => setSendRemarks(e.target.value)} prefix={<FileTextOutlined />} />
+          </div>
+
+          {/* Add the Checkboxes */}
+          <Checkbox onChange={(value) => setAddToFavorites(value)}>Add to Favorites</Checkbox>
+          <Checkbox onChange={(value) => setSendSms(value)}> Send SMS to Receiver</Checkbox>
+          
+          <div className="send-form-buttons">
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+              <Button type="primary" htmlType="submit"  >
+                Send
+              </Button>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+              <Button color="danger" variant="solid"  htmlType="submit" onClick={handleCancelSendMoney}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+          
+        </form>
+    </div>
+  );
+
+  const renderConfirmation = () => (
+    <div className="send-money-form">
+      <h2>Payment Confirmation</h2>
+      <p>
+        <strong>From:</strong> {accounts[currentAccount]?.number}
+      </p>
+      <p>
+        <strong>To:</strong> {sendName} ({sendAccNumber}) - {sendBank}
+      </p>
+      <p>
+        <strong>Amount:</strong> {sendAmount}
+      </p>
+      <p>
+        <strong>Remarks:</strong> {sendRemarks || "None"}
+      </p>
+      <p>
+        <strong>Add to Favorites:</strong> {addToFavorites ? "Yes" : "No"}
+      </p>
+      <p>
+        <strong>Send SMS:</strong> {sendSms ? "Yes" : "No"}
+      </p>
+      <div className="confirmation-buttons">
+        <Button type="primary" onClick={handleConfirm}>
+          Confirm
+        </Button>
+        <Button color="danger" variant="solid"  onClick={handleCancelConfirmation}>
+          Cancel
+        </Button>
+      </div>
+    </div>
+  );
+
+  const renderSuccessMessage = () => (
+    <div className="send-success-form">
+      <h2>Payment Successful</h2>
+      <p>Your payment of {sendAmount} to {sendName} was successful!</p>
+      <div className="succesful-buttons">
+        <Button type="primary" onClick={handleSuccessConfirmation}>
+          Back to Dashboard
+        </Button>
+      </div>
+      
+    </div>
+  );
+
   const renderContent = () => {
     switch (currentPage) {
       case "dashboard":
-        return (
-          <div className="main-content">
-            <div className="top">
-              <div className="top-left">
-                <div className="section account-info">
-                  <div className="account-detail-title">
-                    <div>
-                      <h2>Account Information</h2>
-                    </div>
+        
+        if (showConfirmation) {
+          return (
+            <div className="main-content">
+              {renderConfirmation()}
+            </div>
+          )
+        } else if (showSuccessMessage) {
+          return (
+            <div className="main-content">
+              {renderSuccessMessage()}
+            </div>
+          )
+        } else if (showSendMoneyForm) {
+          return (
+            <div className="main-content">
+              {renderSendMoneyForm()}
+            </div>
+          )
+        } else {
+          // Original dashboard content
+          return (
+            <div className="main-content"> 
+              <div className="top">
+                <div className="top-left">
+                  <div className="section account-info">
+                    <div className="account-detail-title">
+                      <div>
+                        <h2>Account Information</h2>
+                      </div>
 
-                    <div className="account-switch">
-                      <button onClick={switchAccount} className="switch-btn">
-                        Next Account
+                      <div className="account-switch">
+                        <button onClick={switchAccount} className="switch-btn">
+                          Next Account
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      className={`account-details-box ${
+                        isAccountSwitching ? "hide" : "show"
+                      }`}
+                    >
+                      <div className="account-detail">
+                        <strong>Account Number:</strong>
+                        <p>{accounts[currentAccount].number}</p>
+                      </div>
+                      <div className="account-detail">
+                        <strong>Account Balance (LKR):</strong>
+                        <p>{accounts[currentAccount].balance}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="section quick-access">
+                    <h2>Quick Access</h2>
+                    <div className="actions">
+                      <button onClick={() => setShowSendMoneyForm(true)}>
+                        <img src="/icons/send-money.png" alt="Send Money" />
+                        Send Money
+                      </button>
+                      <button>
+                        <img src="/icons/pay-bills.png" alt="Pay Bills" />
+                        Pay Bills
+                      </button>
+                      <button>
+                        <img src="/icons/reloads.png" alt="Reloads" />
+                        Reloads
                       </button>
                     </div>
                   </div>
-                  <div
-                    className={`account-details-box ${
-                      isAccountSwitching ? "hide" : "show"
-                    }`}
-                  >
-                    <div className="account-detail">
-                      <strong>Account Number:</strong>
-                      <p>{accounts[currentAccount].number}</p>
-                    </div>
-                    <div className="account-detail">
-                      <strong>Account Balance (LKR):</strong>
-                      <p>{accounts[currentAccount].balance}</p>
-                    </div>
-                  </div>
                 </div>
 
-                <div className="section quick-access">
-                  <h2>Quick Access</h2>
-                  <div className="actions">
-                    <button>
-                      <img src="/icons/send-money.png" alt="Send Money" />
-                      Send Money
-                    </button>
-                    <button>
-                      <img src="/icons/pay-bills.png" alt="Pay Bills" />
-                      Pay Bills
-                    </button>
-                    <button>
-                      <img src="/icons/reloads.png" alt="Reloads" />
-                      Reloads
-                    </button>
-                  </div>
+                <div className="section favorites">
+              <h2>My Favorites</h2>
+              <p>No favorites added yet.</p>
                 </div>
-              </div>
+              </div>  
 
-              <div className="section favorites">
-                <h2>My Favorites</h2>
-                <p>No favorites added yet.</p>
-              </div>
-            </div>
-
-            <div className="section recent-activity">
-              <h2>Recent Activity</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Activity</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.reverse().slice(0,5).map((transaction, index) => (
+              <div className="section recent-activity">
+                <h2>Recent Activity</h2>
+                <table>
+                  <thead>
                     <tr>
-                      <td>{transaction.date}</td>
-                      <td>{transaction.type}</td>
-                      <td>{transaction.amount}</td>
-                      <td className={`status ${transaction.status.toLowerCase()}`}>{transaction.status}</td>
+                      <th>Date</th>
+                      <th>Activity</th>
+                      <th>Amount</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {transactions.reverse().slice(0,5).map((transaction, index) => (
+                      <tr>
+                        <td>{transaction.date}</td>
+                        <td>{transaction.type}</td>
+                        <td>{transaction.amount}</td>
+                        <td className={`status ${transaction.status.toLowerCase()}`}>{transaction.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
             </div>
-          </div>
-        );
+          
+          )
+        }
+
       case "wallet":
         return (
           <div className="main-content">
@@ -330,6 +524,14 @@ const Dashboard = ({ onLogout }) => {
       number: "5678-xxxx-xxxx-9876",
       expire: "2028/07"
     },
+  ];
+
+  const banks = [
+    { name: "Bank of Ceylon" },
+    { name: "People's Bank" },
+    { name: "Commercial Bank" },
+    { name: "Seylan Bank" },
+    { name: "Hatton National Bank" },
   ];
 
   const transactions = [
